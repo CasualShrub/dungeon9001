@@ -3,11 +3,6 @@ import pygame
 
 from constants import *
 
-EXPLORING = "exploring"
-BATTLE    = "battle"
-GAME_OVER = "game_over"
-VICTORY = "victory"
-
 class Game:
     def __init__(self):
         pygame.init()
