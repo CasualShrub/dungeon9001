@@ -13,12 +13,12 @@ class Room:
         self.height = height
 
     def getCenterTile(self):
-        centerX = self.x + self.w//2
-        centerY = self.y + self.h//2
+        centerX = self.x + self.width//2
+        centerY = self.y + self.height//2
         return (centerX,centerY)
 
     def doesOverlap(self, other):
-        if self.x <= other.x + other.w and self.x + self.w >= other.x and self.y <= other.y + other.h and self.y + self.h >= other.y:
+        if self.x <= other.x + other.width and self.x + self.width >= other.x and self.y <= other.y + other.height and self.y + self.height >= other.y:
             return True
         else:
             return False
@@ -50,7 +50,7 @@ class Dungeon:
             y = random.randint(1, MAP_HEIGHT - h - 1)
             newRoom = Room(x, y, w, h)
 
-            if any(newRoom.overlaps(r) for r in self.rooms):
+            if any(newRoom.doesOverlap(r) for r in self.rooms):
                 continue
 
             self.drawRoom(newRoom)
@@ -72,15 +72,15 @@ class Dungeon:
         for room in self.rooms:
             enemyCount = random.randint(1, 3) #should probably move this to cosntants as well ?
             for counter in range(enemyCount):
-                x = random.randint(room.x + 1, room.x + room.w - 2)
-                y = random.randint(room.y + 1, room.y + room.h - 2)
-                if (x, y) != self.stair_pos and (x, y) not in self.enemy_positions:
+                x = random.randint(room.x + 1, room.x + room.width - 2)
+                y = random.randint(room.y + 1, room.y + room.height - 2)
+                if (x, y) != self.exitPosition and (x, y) not in self.enemyPositions:
                     self.enemyPositions.append((x, y))
 
     # basically here I just want to make a rect of the tiles a floor tile
     def drawRoom(self, room):
-        for x in range(room.x, room.x + room.w):
-            for y in range(room.y, room.y + room.h):
+        for x in range(room.x, room.x + room.width):
+            for y in range(room.y, room.y + room.height):
                 self.tiles[x][y] = FLOOR
 
     def drawPath(self, start, end):
@@ -108,6 +108,6 @@ class Dungeon:
         
     def getPlayerSpawn(self):
         if self.rooms:
-            return self.rooms[0].center()
+            return self.rooms[0].getCenterTile()
         else:
             return (0, 0)
