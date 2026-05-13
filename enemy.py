@@ -8,6 +8,14 @@ ENEMY_TYPES = [
     {"name": "Dragon", "hp": 60, "strength": 15, "defense": 6},
 ]
 
+ENEMY_SYMBOLS = {
+    "Slime":("s", (180, 80, 80)),
+    "Goblin":("g", (200, 160, 120)),
+    "Orc":("O", (160, 60, 60)),
+    "Troll":("T", (140, 40, 40)),
+    "Dragon":("D", (220, 80, 40)),
+}
+
 class Enemy:
     def __init__(self, x, y):
         self.x = x
