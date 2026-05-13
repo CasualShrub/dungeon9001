@@ -27,9 +27,9 @@ class Game:
         self.updateCamera()
 
         self.enemies = []
-        enemyPositions = self.dungeon.enemy_positions4
+        enemyPositions = self.dungeon.enemyPositions
         for enemyX, enemyY in enemyPositions:
-            self.enemies.append(Enemy(ex, ey))
+            self.enemies.append(Enemy(enemyX, enemyY))
         
         self.currentEnemy = None
     
@@ -77,7 +77,7 @@ class Game:
             if event.type != pygame.KEYDOWN:
                 continue
         
-            if self.state == EXPLORING:
+            if self.gameState == EXPLORING:
                 if event.key in (pygame.K_UP, pygame.K_w): 
                     self.move(0,-1)
                 elif event.key in (pygame.K_DOWN,  pygame.K_s):
@@ -100,10 +100,12 @@ class Game:
         self.cameraX = self.player.x - MAP_COLUMNS // 2
         self.cameraY = self.player.y - MAP_ROWS // 2
 
+        
+
     def gameLoop(self):
         while True:
             self.handleEvents()
-            self.draw()
+            self.render()
             self.clock.tick(FPS)
 
 
