@@ -61,6 +61,9 @@ class Dungeon:
             self.rooms.append(newRoom)
             if len(self.rooms) >= maxRooms:
                 break
+        
+        if not self.rooms:
+            return
 
         centerX, CenterY = self.rooms[-1].getCenterTile()
         self.tiles[centerX][CenterY] = EXIT
@@ -102,9 +105,9 @@ class Dungeon:
             return self.tiles[x][y]
         else:
             return WALL
-
+        
     def getPlayerSpawn(self):
-        if self.rooms != None:
+        if self.rooms:
             return self.rooms[0].center()
         else:
             return (0, 0)
