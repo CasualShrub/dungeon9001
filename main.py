@@ -124,7 +124,7 @@ class Game:
                 enemySymbol, color = ENEMY_SYMBOLS.get(enemy.name, ("?", RED))
                 pygame.draw.rect(self.screen, ENEMY_DARK_RED, (left, top, TILE_SIZE, TILE_SIZE))
                 text = self.renderText(enemySymbol, self.regularFont, color)
-                self.screen.blit(text, (left + 9, top + 6)) 
+                self.screen.blit(text, (left + 4, top + 6)) 
 
         pc = self.player.x - self.cameraX
         pr = self.player.y - self.cameraY
