@@ -2,6 +2,10 @@ import sys
 import pygame
 
 from constants import *
+from dungeon import Dungeon
+from player import Player
+from enemy import Enemy
+from item import Item
 
 class Game:
     def __init__(self):
@@ -13,7 +17,10 @@ class Game:
         self.startGame()
 
     def startGame(self):
-        pass
+        self.gameState = EXPLORING
+        self.dungeon = Dungeon()
+        playerX, playerY = self.dungeon.getPlayerSpawn()
+
 
 
     def handleEvents(self):
