@@ -19,3 +19,6 @@ class Player:
         damage = max(1, incomingDamage - reduction)
         self.hp -= damage
         return damage #todo maybe also output the reduction?
+
+    def isAlive(self):
+        return self.hp > 0

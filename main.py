@@ -1,5 +1,6 @@
 import sys
 import pygame
+import random
 
 from constants import *
 from dungeon import *
@@ -29,6 +30,8 @@ class Game:
         self.updateCamera()
 
         self.enemies = []
+        self.combatLog   = []
+        self.pendingItem = None
         enemyPositions = self.dungeon.enemyPositions
         for enemyX, enemyY in enemyPositions:
             self.enemies.append(Enemy(enemyX, enemyY))
@@ -45,7 +48,7 @@ class Game:
         didCollideWithEnemy = self.isEnemyAt(newX, newY)
         if didCollideWithEnemy:
             enemy = self.getEnemyAtPosition(newX, newY)
-            #fight the enemy here TODO
+            self.battle(enemy)
             return
         
         self.player.x = newX
@@ -69,6 +72,58 @@ class Game:
         else:
             return None
 
+    def battle(self, enemy):
+        self.gameState = BATTLE
+        self.currentEnemy = enemy
+        self.combatLog = [
+            f"A {enemy.name} blocks your path!",
+            f"  Enemy — HP:{enemy.hp}  STR:{enemy.strength}  DEF:{enemy.defense}",
+            "Press SPACE to attack, or R to run.",
+        ]
+
+    def attack(self):
+        damage = self.player.attack()
+        damageDealt = self.currentEnemy.takeDamage(damage)
+        self.combatLog.append(f"You dealt {damageDealt} damage to the {self.currentEnemy.name}.")
+
+        if not self.currentEnemy.isAlive():
+            self.combatLog.append(f"You defeated the {self.currentEnemy.name}!")
+            self.enemies.remove(self.currentEnemy)
+            self.pendingItem = Item()
+            self.combatLog.append(f"You found: {self.pendingItem.name}!")
+            self.gameState = CLAIM_ITEM
+            return
+
+        incomingDamge = self.currentEnemy.attack()
+        damageReceived = self.player.takeDamage(incomingDamge)
+        self.combatLog.append(
+            f"The {self.currentEnemy.name} hits you for {damageReceived} damage."
+        )
+        if not self.player.isAlive():
+            self.combatLog.append("You have been slain...")
+            self.gameState = GAME_OVER
+
+    def run(self):
+        if random.random() < 0.5:
+            self.combatLog.append("You escaped!")
+            self.gameState = EXPLORING
+            self.currentEnemy = None
+        else:
+            incomingDamage = self.currentEnemy.attack()
+            damageReceived = self.player.takeDamage(incomingDamage)
+            self.combatLog.append(
+                f"Failed to escape! The {self.currentEnemy.name} hits for {damageReceived}."
+            )
+            if not self.player.isAlive():
+                self.combatLog.append("You have been slain...")
+                self.gameState = GAME_OVER
+    
+    def collectItem(self):
+        if self.pendingItem:
+            self.pendingItem.equip(self.player)
+            self.pendingItem = None
+        self.currentEnemy = None
+        self.gameState = EXPLORING
 
     def handleEvents(self):
         for event in pygame.event.get():
@@ -88,6 +143,11 @@ class Game:
                     self.move(-1, 0)
                 elif event.key in (pygame.K_RIGHT, pygame.K_d): 
                     self.move( 1, 0)
+            elif self.gameState == BATTLE:
+                if event.key == pygame.K_SPACE:
+                    self.attack()
+                elif event.key == pygame.K_r:
+                    self.run()
     
     def renderDungeon(self):
         self.screen.set_clip(pygame.Rect(0, 0, MAP_DISPLAY_WIDTH, SCREEN_HEIGHT))

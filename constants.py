@@ -35,5 +35,6 @@ DARK_BLUE_PLAYER  = (20,  20,  60)
 
 EXPLORING = "exploring"
 BATTLE    = "battle"
+CLAIM_ITEM = "item"
 GAME_OVER = "game_over"
 WIN       = "win"
