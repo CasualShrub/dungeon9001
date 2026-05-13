@@ -14,7 +14,7 @@ class Game:
         pygame.display.set_caption("Dungeon 9001")
         self.clock = pygame.time.Clock()
 
-        self.regularFont = pygame.font.SysFont("monospace", 18)
+        self.regularFont = pygame.font.SysFont("segoe uiemoji", 18)
 
         self.startGame()
 
@@ -64,7 +64,7 @@ class Game:
     
     def getEnemyAtPosition(self, x, y):
         for enemy in self.enemies:
-            if enemy.x == x and e.enemy == y:
+            if enemy.x == x and enemy.y == y:
                 return enemy
         else:
             return None
@@ -132,7 +132,7 @@ class Game:
         top = pr * TILE_SIZE
         pygame.draw.rect(self.screen, DARK_BLUE_PLAYER, (left, top, TILE_SIZE, TILE_SIZE))
         text = self.renderText("😎", self.regularFont, BLUE)
-        self.screen.blit(text, (left + 8, top + 6))
+        self.screen.blit(text, (left + 4, top + 6))
 
         self.screen.set_clip(None)
 
