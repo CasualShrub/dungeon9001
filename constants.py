@@ -7,6 +7,8 @@ BATTLE    = "battle"
 GAME_OVER = "game_over"
 VICTORY = "victory"
 
+MAP_WIDTH = 50
+MAP_HEIGHT = 40
 WALL = 0
 FLOOR = 1
 
