@@ -2,7 +2,7 @@ import sys
 import pygame
 
 from constants import *
-from dungeon import Dungeon
+from dungeon import *
 from player import Player
 from enemy import Enemy
 from item import Item
@@ -20,7 +20,47 @@ class Game:
         self.gameState = EXPLORING
         self.dungeon = Dungeon()
         playerX, playerY = self.dungeon.getPlayerSpawn()
+        self.player = Player(playerX, playerY)
 
+        self.enemies = []
+        enemyPositions = self.dungeon.enemy_positions4
+        for enemyX, enemyY in enemyPositions:
+            self.enemies.append(Enemy(ex, ey))
+        
+        self.currentEnemy = None
+    
+    
+    def move(self, xToAdd, yToAdd):
+        newX, newY = self.player.x + xToAdd, self.player.y + yToAdd
+        tile = self.dungeon.get_tile(newX, newY)
+        if tile == WALL:
+            return
+        
+        didCollideWithEnemy = self.isEnemyAt(newX, newY)
+        if didCollideWithEnemy:
+            enemy = self.getEnemyAtPosition(newX, newY)
+            self._start_battle(enemy)
+            return
+        
+        self.player.x = newX
+        self.player.y = newY
+
+        if tile == EXIT:
+            self.state = VICTORY
+    
+    def isEnemyAt(self, x, y):
+        for enemy in self.enemies:
+            if enemy.x == x and e.enemy == y:
+                return True
+        else:
+            return False
+    
+    def getEnemyAtPosition(self, x, y):
+        for enemy in self.enemies:
+            if enemy.x == x and e.enemy == y:
+                return enemy
+        else:
+            return None
 
 
     def handleEvents(self):
@@ -28,6 +68,19 @@ class Game:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            
+            if event.type != pygame.KEYDOWN:
+                continue
+        
+            if self.state == EXPLORING:
+                if event.key in (pygame.K_UP, pygame.K_w): 
+                    self.move(0,-1)
+                elif event.key in (pygame.K_DOWN,  pygame.K_s):
+                    self.move(0, 1)
+                elif event.key in (pygame.K_LEFT,  pygame.K_a):
+                    self.move(-1, 0)
+                elif event.key in (pygame.K_RIGHT, pygame.K_d): 
+                    self.move( 1, 0)
 
 
 if __name__ == "__main__":
