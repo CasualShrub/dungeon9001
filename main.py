@@ -22,6 +22,10 @@ class Game:
         playerX, playerY = self.dungeon.getPlayerSpawn()
         self.player = Player(playerX, playerY)
 
+        self.cameraX = 0
+        self.cameraY = 0 #TODO maybve move camera to its own class? not sure if worth
+        self.updateCamera()
+
         self.enemies = []
         enemyPositions = self.dungeon.enemy_positions4
         for enemyX, enemyY in enemyPositions:
@@ -44,6 +48,7 @@ class Game:
         
         self.player.x = newX
         self.player.y = newY
+        self.updateCamera()
 
         if tile == EXIT:
             self.state = VICTORY
@@ -90,6 +95,10 @@ class Game:
         self.screen.fill(BLACK)
 
         self.renderDungeon()
+    
+    def updateCamera(self):
+        self.cameraX = self.player.x - MAP_COLUMNS // 2
+        self.cameraY = self.player.y - MAP_ROWS // 2
 
     def gameLoop(self):
         while True:
