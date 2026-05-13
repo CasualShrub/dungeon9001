@@ -15,7 +15,9 @@ class Game:
         pygame.display.set_caption("Dungeon 9001")
         self.clock = pygame.time.Clock()
 
+        self.smallFont = pygame.font.SysFont("segoe uiemoji", 14)
         self.regularFont = pygame.font.SysFont("segoe uiemoji", 18)
+        self.bigFont = pygame.font.SysFont("segoe uiemoji", 24, bold=True)
 
         self.startGame()
 
@@ -56,7 +58,7 @@ class Game:
         self.updateCamera()
 
         if tile == EXIT:
-            self.state = VICTORY
+            self.gameState = VICTORY
     
     def isEnemyAt(self, x, y):
         for enemy in self.enemies:
@@ -195,11 +197,77 @@ class Game:
         self.screen.blit(text, (left + 4, top + 6))
 
         self.screen.set_clip(None)
+    
+    def renderBattle(self):
+        overlay = pygame.Surface((MAP_DISPLAY_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA) #slightly transparent overlay!
+        overlay.fill((0, 0, 0, 200))
+        self.screen.blit(overlay, (0, 0))
+
+        battleWidth = 620
+        battleHeight = 380
+        battleX = (MAP_DISPLAY_WIDTH - battleWidth) // 2
+        battleY = (SCREEN_HEIGHT - battleHeight) // 2
+        pygame.draw.rect(self.screen, (18, 8, 8),  (battleX, battleY, battleWidth, battleHeight))
+        pygame.draw.rect(self.screen, RED, (battleX, battleY, battleWidth, battleHeight), 2)
+
+        enemy  = self.currentEnemy
+        player  = self.player
+        barWidth = battleWidth - 40
+
+        self.screen.blit(
+            self.renderText(f"BATTLE: {enemy.name.upper()}", self.bigFont, RED),
+            (battleX + 20, battleY + 14)
+        )
+
+        enemyY = battleY + 52
+        enemyHealthRatio = enemy.hp / enemy.maxHp
+        barHeight = 15
+        pygame.draw.rect(self.screen, DARK_GRAY_WALL_BORDER, (battleX + 20, enemyY, barWidth, barHeight))
+        pygame.draw.rect(self.screen, RED, (battleX + 20, enemyY, int(barWidth * max(0.0, enemyHealthRatio)), barHeight))
+        pygame.draw.rect(self.screen, GRAY, (battleX + 20, enemyY, barWidth, barHeight), 1)
+        self.screen.blit(
+            self.renderText(f"Enemy HP: {enemy.hp}/{enemy.maxHp} STR:{enemy.strength} DEF:{enemy.defense}", self.smallFont, WHITE),
+            (battleX + 24, enemyY + 1)
+        )
+
+        playerY = enemyY + 28
+        playerRatio  = player.hp / player.max_hp
+
+        # TODO move these to their own function later like draw bbar or something
+        pygame.draw.rect(self.screen, DARK_GRAY_WALL_BORDER, (battleX + 20, playerY, barWidth, barHeight))
+        pygame.draw.rect(self.screen, self.getHpColor(playerRatio), (battleX + 20, playerY, int(barWidth * max(0.0, playerRatio)), barHeight))
+        pygame.draw.rect(self.screen, GRAY, (battleX + 20, playerY, barWidth, barHeight), 1)
+        self.screen.blit(
+            self.renderText(f"Your  HP: {player.hp}/{player.max_hp}   STR:{player.strength}  DEF:{player.defense}", self.smallFont, WHITE),
+            (battleX + 24, playerY + 1)
+        )
+
+        combatLogY = battleY + 112
+        pygame.draw.line(self.screen, GRAY, (battleX + 10, combatLogY - 5), (battleX + battleWidth - 10, combatLogY - 5))
+        #lets only get the most recent 10 logs
+        visibleLogs = self.combatLog[-9:]
+        for i, line in enumerate(visibleLogs):
+            if i == len(visibleLogs) - 1:
+                color = YELLOW 
+            else: 
+                color = WHITE
+            
+            self.screen.blit(self.renderText(line, self.smallFont, color), (battleX + 20, combatLogY + i * 22))
+
+        controlY = battleY + battleHeight - 36
+        pygame.draw.line(self.screen, GRAY, (battleX + 10, controlY - 5), (battleX + battleWidth - 10, controlY - 5))
+        self.screen.blit(self.renderText("[SPACE] Attack          [R] Run", self.regularFont, YELLOW),
+            (battleX + 20, controlY)
+        )
+
+
 
     def render(self):
         self.screen.fill(BLACK)
 
         self.renderDungeon()
+        if self.gameState == BATTLE:
+            self.renderBattle()
 
         pygame.display.flip()
     
@@ -210,7 +278,13 @@ class Game:
         self.cameraX = self.player.x - MAP_COLUMNS // 2
         self.cameraY = self.player.y - MAP_ROWS // 2
 
-        
+    def getHpColor(self, ratio):
+        if ratio > 0.5: 
+            return GREEN
+        elif ratio > 0.25: 
+            return ORANGE
+        else:
+            return RED
 
     def gameLoop(self):
         while True:
