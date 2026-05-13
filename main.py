@@ -81,8 +81,24 @@ class Game:
                     self.move(-1, 0)
                 elif event.key in (pygame.K_RIGHT, pygame.K_d): 
                     self.move( 1, 0)
+    
+    def renderDungeon():
+        #TODO draw the map tiles
+        pass
+
+    def render(self):
+        self.screen.fill(BLACK)
+
+        self.renderDungeon()
+
+    def gameLoop(self):
+        while True:
+            self.handleEvents()
+            self.draw()
+            self.clock.tick(FPS)
+
 
 
 if __name__ == "__main__":
     game = Game()
-    game.run()
+    game.gameLoop()
