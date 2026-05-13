@@ -19,3 +19,8 @@ RED = (200, 60, 60)
 GREEN = (60, 180, 60)
 YELLOW = (220, 200, 50)
 ORANGE = (220, 140, 50)
+
+EXPLORING = "exploring"
+BATTLE    = "battle"
+GAME_OVER = "game_over"
+WIN       = "win"
