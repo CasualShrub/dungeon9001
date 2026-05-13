@@ -36,14 +36,14 @@ class Game:
     
     def move(self, xToAdd, yToAdd):
         newX, newY = self.player.x + xToAdd, self.player.y + yToAdd
-        tile = self.dungeon.get_tile(newX, newY)
+        tile = self.dungeon.getTile(newX, newY)
         if tile == WALL:
             return
         
         didCollideWithEnemy = self.isEnemyAt(newX, newY)
         if didCollideWithEnemy:
             enemy = self.getEnemyAtPosition(newX, newY)
-            self._start_battle(enemy)
+            #fight the enemy here TODO
             return
         
         self.player.x = newX
@@ -55,7 +55,7 @@ class Game:
     
     def isEnemyAt(self, x, y):
         for enemy in self.enemies:
-            if enemy.x == x and e.enemy == y:
+            if enemy.x == x and enemy.y == y:
                 return True
         else:
             return False
