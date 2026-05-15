@@ -153,6 +153,9 @@ class Game:
             elif self.gameState == CLAIM_ITEM:
                 if event.key == pygame.K_SPACE:
                     self.collectItem()
+            elif self.gameState == GAME_OVER:
+                if event.key == pygame.K_KP_ENTER:
+                    self.startGame()
     
     def collectItem(self):
         if self.pendingItem:
@@ -300,15 +303,30 @@ class Game:
         pygame.draw.line(self.screen, GRAY, (panelX + 10, cy - 5), (panelX + panelWidth - 10, cy - 5))
         self.screen.blit(self.renderText("[SPACE] Collect Item", self.regularFont, YELLOW), (panelX + 20, cy))
 
+    
+    def renderGameEnd(self):
+        self.screen.fill(BLACK)
+        position = SCREEN_WIDTH // 2
+        titleText = self.renderText("YOU DIED", self.bigFont, RED)
+        titlePos = position - titleText.get_width() // 2
+        self.screen.blit(titleText, (titlePos, 220))
+
+        descText = self.renderText("Press ENTER to play again", self.regularFont, WHITE)
+        descPos = position - descText.get_width() // 2
+        self.screen.blit(descText, (descPos, 270))
+
 
     def render(self):
         self.screen.fill(BLACK)
 
-        self.renderDungeon()
-        if self.gameState == BATTLE:
-            self.renderBattle()
-        elif self.gameState == CLAIM_ITEM:
-            self.renderItemScreen()
+        if self.gameState == GAME_OVER: 
+            self.renderGameEnd()
+        else:
+            self.renderDungeon()
+            if self.gameState == BATTLE:
+                self.renderBattle()
+            elif self.gameState == CLAIM_ITEM:
+                self.renderItemScreen()
 
         pygame.display.flip()
     
