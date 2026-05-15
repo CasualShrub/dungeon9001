@@ -150,7 +150,16 @@ class Game:
                     self.attack()
                 elif event.key == pygame.K_r:
                     self.run()
-
+            elif self.gameState == CLAIM_ITEM:
+                if event.key == pygame.K_SPACE:
+                    self.collectItem()
+    
+    def collectItem(self):
+        if self.pendingItem:
+            self.pendingItem.equip(self.player)
+            self.pendingItem = None
+        self.currentEnemy = None
+        self.gameState = EXPLORING
     
     def renderDungeon(self):
         self.screen.set_clip(pygame.Rect(0, 0, MAP_DISPLAY_WIDTH, SCREEN_HEIGHT))
