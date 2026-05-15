@@ -9,7 +9,8 @@ ITEM_POOL = [
     {"name": "Elixir", "str": 1, "def": 1, "hp": 5, "desc": "A potion that makes you stronger."},
     {"name": "Pythonic Blade", "str":8, "def": 2, "hp": 0, "desc": "A blade once wielded by the cult of Python."},
     {"name": "The Platemail of Karlos", "str": 0, "def": 6, "hp": 0, "desc": "Impenetrable plated armor once wielded by Karlos the dragon-slayer."},
-    {"name": "The Power Ring of Atif","str": 3, "def": -2, "hp": 5, "desc": "A ring once worn by the legendary wizard Atif."},
+    {"name": "The Power Ring of Atif","str": 6, "def": -2, "hp": 5, "desc": "A ring once worn by the legendary wizard Atif."},
+    {"name": "The Greatsword of Armin","str": 4, "def": 2, "hp": 0, "desc": "An extremely large blade once wielded by Armin the hero"},
 ]
 
 class Item:
