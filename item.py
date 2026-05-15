@@ -28,3 +28,25 @@ class Item:
         player.max_hp += self.hp_bonus
         player.hp += self.hp_bonus
         player.items.append(self.name)
+    
+    def getStatBonusString(self):
+        output = [] #this ones a list of tuples, the other boolean if its negative 
+        if self.str_bonus != 0:
+            if self.str_bonus > 0:
+                sign = "+"
+            else:
+                sign = "-"
+            output.append((f"STR  {sign}{self.str_bonus}", self.str_bonus > 0))
+        if self.def_bonus != 0:
+            if self.def_bonus > 0:
+                sign = "+"
+            else:
+                sign = "-"
+            output.append((f"DEF  {sign}{self.def_bonus}", self.def_bonus > 0))
+        if self.hp_bonus != 0:
+            if self.hp_bonus > 0:
+                sign = "+"
+            else:
+                sign = "-"
+            output.append((f"HP   {sign}{self.hp_bonus}", self.hp_bonus > 0))
+        return output

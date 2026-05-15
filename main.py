@@ -150,6 +150,7 @@ class Game:
                     self.attack()
                 elif event.key == pygame.K_r:
                     self.run()
+
     
     def renderDungeon(self):
         self.screen.set_clip(pygame.Rect(0, 0, MAP_DISPLAY_WIDTH, SCREEN_HEIGHT))
@@ -260,6 +261,35 @@ class Game:
             (battleX + 20, controlY)
         )
 
+    def renderItemScreen(self):
+        overlay = pygame.Surface((MAP_DISPLAY_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 200))
+        self.screen.blit(overlay, (0, 0))
+
+        panelWidth = 500
+        panelHeight = 300
+        panelX = (MAP_DISPLAY_WIDTH - panelWidth) // 2
+        panelY = (SCREEN_HEIGHT - panelHeight) // 2
+        pygame.draw.rect(self.screen, (8, 18, 8), (panelX, panelY, panelWidth, panelHeight))
+        pygame.draw.rect(self.screen, YELLOW, (panelX, panelY, panelWidth, panelHeight), 2)
+
+        item = self.pendingItem
+        self.screen.blit(self.renderText("ITEM FOUND!", self.bigFont, YELLOW), (panelX + 20, panelY + 16))
+        self.screen.blit(self.renderText(item.name, self.bigFont, WHITE), (panelX + 20, panelY + 52))
+        self.screen.blit(self.renderText(item.desc, self.regularFont, GRAY), (panelX + 20, panelY + 86))
+
+        y = panelY + 124
+        for text, positive in item.getStatBonusString():
+            if positive:
+                color = GREEN 
+            else:
+                color = RED
+            self.screen.blit(self.renderText(text, self.regularFont, color), (panelX + 20, y))
+            y += 28
+
+        cy = panelY + panelHeight - 36
+        pygame.draw.line(self.screen, GRAY, (panelX + 10, cy - 5), (panelX + panelWidth - 10, cy - 5))
+        self.screen.blit(self.renderText("[SPACE] Collect Item", self.regularFont, YELLOW), (panelX + 20, cy))
 
 
     def render(self):
@@ -268,6 +298,8 @@ class Game:
         self.renderDungeon()
         if self.gameState == BATTLE:
             self.renderBattle()
+        elif self.gameState == CLAIM_ITEM:
+            self.renderItemScreen()
 
         pygame.display.flip()
     
