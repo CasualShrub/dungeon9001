@@ -154,7 +154,7 @@ class Game:
                 if event.key == pygame.K_SPACE:
                     self.collectItem()
             elif self.gameState == GAME_OVER:
-                if event.key == pygame.K_KP_ENTER:
+                if event.key == pygame.K_RETURN:
                     self.startGame()
     
     def collectItem(self):
