@@ -164,6 +164,38 @@ class Game:
         self.currentEnemy = None
         self.gameState = EXPLORING
     
+    # this is the logic 
+    def canDrawTile(self, targetX, targetY):
+        x = self.player.x
+        y = self.player.y
+        dx = abs(targetX - x)
+        dy = abs(targetY - y)
+
+        directionX = 1
+        if targetX <= x:
+            directionX = -1
+        
+        directionY = 1
+        if targetY <= y:
+            directionY = -1
+
+        # used Bresenham's line generation algorithm to help figure out the logic fpr this https://www.geeksforgeeks.org/dsa/bresenhams-line-generation-algorithm/
+        stepCount = dx - dy
+
+        while x != targetX or y != targetY:
+            errorSpace = 2 * stepCount
+            if errorSpace > -dy: #if the error space is large, then we can move horizontal!
+                stepCount -= dy
+                x += directionX
+            if errorSpace < dx: #if the different is small, then we can move vertical!
+                stepCount += dx
+                y += directionY
+
+            # if we hit a wall just block the vision
+            if (x != targetX or y != targetY) and self.dungeon.getTile(x, y) == WALL:
+                return False
+        return True
+
     def renderDungeon(self):
         self.screen.set_clip(pygame.Rect(0, 0, MAP_DISPLAY_WIDTH, SCREEN_HEIGHT))
 
@@ -179,9 +211,16 @@ class Game:
                 top = row * TILE_SIZE
                 rect = pygame.Rect(left, top, TILE_SIZE, TILE_SIZE)
 
-                if tile == WALL:
-                    pygame.draw.rect(self.screen, DARK_GRAY_WALL, rect)
-                    pygame.draw.rect(self.screen, DARK_GRAY_WALL_BORDER, rect, 1) #cool border radius parameter!
+                distX = abs(tileX - self.player.x)
+                distY = abs(tileY - self.player.y)
+                inRange = distX + distY <= FOG_RADIUS
+                isVisble = inRange and self.canDrawTile(tileX, tileY)
+
+                if not isVisble:
+                    pygame.draw.rect(self.screen, BLACK, rect)
+                elif tile == WALL:
+                    pygame.draw.rect(self.screen, BLACK, rect)
+                    pygame.draw.rect(self.screen, DARK_GRAY_WALL_BORDER, rect, 1)
                 elif tile == FLOOR:
                     pygame.draw.rect(self.screen, DARK_BROWN, rect)
                     pygame.draw.rect(self.screen, DARK_BROWN_FLOOR_BORDER, rect, 1)
@@ -193,7 +232,7 @@ class Game:
         for enemy in self.enemies:
             enemyColumn = enemy.x - self.cameraX
             enemeyRow = enemy.y - self.cameraY
-            if 0 <= enemyColumn < MAP_COLUMNS and 0 <= enemeyRow < MAP_ROWS:
+            if 0 <= enemyColumn < MAP_COLUMNS and 0 <= enemeyRow < MAP_ROWS and abs(enemy.x - self.player.x) + abs(enemy.y - self.player.y) <= FOG_RADIUS and self.canDrawTile(enemy.x, enemy.y):
                 left = enemyColumn * TILE_SIZE
                 top = enemeyRow * TILE_SIZE
                 enemySymbol, color = ENEMY_SYMBOLS.get(enemy.name, ("?", RED))

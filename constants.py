@@ -40,3 +40,5 @@ BATTLE    = "battle"
 CLAIM_ITEM = "item"
 GAME_OVER = "game_over"
 WIN       = "win"
+
+FOG_RADIUS = 5
