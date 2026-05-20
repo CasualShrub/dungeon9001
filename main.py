@@ -282,7 +282,7 @@ class Game:
         panelHeight = 300
         panelX = (MAP_DISPLAY_WIDTH - panelWidth) // 2
         panelY = (SCREEN_HEIGHT - panelHeight) // 2
-        pygame.draw.rect(self.screen, (8, 18, 8), (panelX, panelY, panelWidth, panelHeight))
+        pygame.draw.rect(self.screen, DARK_GRAY_WALL_BORDER, (panelX, panelY, panelWidth, panelHeight))
         pygame.draw.rect(self.screen, YELLOW, (panelX, panelY, panelWidth, panelHeight), 2)
 
         item = self.pendingItem
@@ -314,7 +314,71 @@ class Game:
         descText = self.renderText("Press ENTER to play again", self.regularFont, WHITE)
         descPos = position - descText.get_width() // 2
         self.screen.blit(descText, (descPos, 270))
+    
+    
+    def renderSideMenu(self):
+        startX = MAP_DISPLAY_WIDTH #i'm defining start x is the right edge of the map,, where the sidebar begins
+        pygame.draw.rect(self.screen, REALLY_DARK_BLUE, (startX, 0, SIDEBAR_WIDTH, SCREEN_HEIGHT))
+        pygame.draw.line(self.screen, GRAY, (startX, 0), (startX, SCREEN_HEIGHT), 2)
 
+        x = startX + 10
+        y = 12 # increase y to move to draw the next row
+
+        self.screen.blit(self.renderText("DUNGEON 9001", self.bigFont, YELLOW), (x, y));
+        y += 30
+
+        pygame.draw.line(self.screen, GRAY, (startX + 5, y), (SCREEN_WIDTH - 5, y));
+        y += 10
+
+        p = self.player
+        barWidth = SIDEBAR_WIDTH - 20
+        barHeight = 17
+
+        self.screen.blit(self.renderText("HP", self.regularFont, WHITE), (x, y));
+        y += 22
+        ratio = p.hp / p.max_hp
+
+        pygame.draw.rect(self.screen, DARK_GRAY_WALL_BORDER, (x, y, barWidth, barHeight))
+        pygame.draw.rect(self.screen, self.getHpColor(ratio), (x, y, int(barWidth * max(0.0, ratio)), barHeight))
+        pygame.draw.rect(self.screen, GRAY, (x, y, barWidth, barHeight), 1)
+        lbl = self.renderText(f"{p.hp}/{p.max_hp}", self.regularFont, WHITE)
+        self.screen.blit(lbl, (x + 4, y + 1)); y += 24
+
+        self.screen.blit(self.renderText(f"STR: {p.strength}", self.regularFont, ORANGE), (x, y));
+        y += 26
+        self.screen.blit(self.renderText(f"DEF: {p.defense}",  self.regularFont, BLUE),   (x, y));
+        y += 30
+
+        pygame.draw.line(self.screen, GRAY, (startX + 5, y), (SCREEN_WIDTH - 5, y));
+        y += 10
+
+        count = len(self.enemies)
+            
+        self.screen.blit(self.renderText(f"Enemies left on this floor: {count}", self.smallFont, RED), (x, y));
+        y += 20
+        self.screen.blit(self.renderText("Find X to escape!",  self.smallFont, GRAY), (x, y));
+        y += 22
+
+        pygame.draw.line(self.screen, GRAY, (startX + 5, y), (SCREEN_WIDTH - 5, y));
+        y += 10
+
+        self.screen.blit(self.renderText("ITEMS:", self.regularFont, WHITE), (x, y));
+        y += 22
+        if p.items:
+            for name in p.items[-8:]:
+                txt = name if len(name) <= 14 else name[:13] + "…"
+                self.screen.blit(self.renderText(f"- {txt}", self.smallFont, WHITE), (x, y))
+                y += 18
+        else:
+            self.screen.blit(self.renderText("(none)", self.smallFont, GRAY), (x, y));
+            y += 18
+
+        y = SCREEN_HEIGHT - 100
+        pygame.draw.line(self.screen, GRAY, (startX + 5, y), (SCREEN_WIDTH - 5, y));
+        y += 8
+        for line in ["WASD / Arrows: move", "SPACE: attack", "R: run from battle"]:
+            self.screen.blit(self.renderText(line, self.smallFont, DARK_GRAY_WALL), (x, y));
+            y += 18
 
     def render(self):
         self.screen.fill(BLACK)
@@ -323,6 +387,7 @@ class Game:
             self.renderGameEnd()
         else:
             self.renderDungeon()
+            self.renderSideMenu()
             if self.gameState == BATTLE:
                 self.renderBattle()
             elif self.gameState == CLAIM_ITEM:
