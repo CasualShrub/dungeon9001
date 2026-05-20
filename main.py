@@ -56,10 +56,26 @@ class Game:
         self.player.x = newX
         self.player.y = newY
         self.updateCamera()
+        self.enemyMoveStep()
 
         if tile == EXIT:
             self.gameState = VICTORY
     
+    def enemyMoveStep(self):
+        directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+        for enemy in self.enemies:
+            dx = random.choice(directions)[0]
+            dy = random.choice(directions)[1]
+
+            targetX = enemy.x + dx
+            targetY = enemy.y + dy
+            if self.dungeon.getTile(targetX, targetY) == WALL:
+                continue
+            if self.isEnemyAt(targetX, targetY):
+                continue
+            enemy.x = targetX
+            enemy.y = targetY
+
     def isEnemyAt(self, x, y):
         for enemy in self.enemies:
             if enemy.x == x and enemy.y == y:
